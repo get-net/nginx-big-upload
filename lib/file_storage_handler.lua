@@ -4,7 +4,7 @@
 -- Upload module has no contact with a backend. The client uploading the file should call the backend
 -- after successfully submitting last chunk of file. Then the backend should look for file named as
 -- Session-ID in the upload directory.
-local zlib = require('zlib')
+
 local setmetatable = setmetatable
 local concat = table.concat
 local io = io
@@ -13,6 +13,7 @@ local error = error
 local ngx = ngx
 local gzip = ngx.var.gzip == 'true'
 local gz = ngx.var.gz == 'true'
+local zlib = (gzip and gz) and require('zlib')
 
 local _M = {}
 
