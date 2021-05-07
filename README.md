@@ -24,6 +24,10 @@ contain setup scripts for various use cases. Docker is not required as it is use
  - LuaJIT,
  - Shared library: libcrypto.so version 1.0.2 for SHA1 and SHA256 calculation
  - Shared library: libz.so (Zlib) needed for CRC32 calculation
+ - Install zlib library:
+   
+        luarocks install lzlib
+
 
 ### Docker image
 
@@ -54,7 +58,9 @@ Below is example upload configuration in nginx configuration file. There is more
           set $storage backend_file;
           set $file_storage_path /tmp;
           set $backend_url /files/add;
-    
+          set $gzip true;
+          set $gz true;
+
           set $bu_sha1 on;
           set $bu_sha256 on;
           set $bu_checksum on;
@@ -97,6 +103,17 @@ The `url` value should refer to location recognized in nginx configuration. Outb
 
 With the above example the last chunk's success request processing will be forwarded to `@rails_app` named location.
 
+### set $gzip true
+Optional parameter. Set to true if you want to compress files (the file will have a standard session name WITHOUT the file extension!)
+The algorithm is used:
+
+    zlib.deflate(file, nil, nil, 15 + 16)
+
+
+### set $gz true
+Optional parameter. Works only in conjunction with $ gzip. Add an extension to the file name
+
+    local file_path = (gzip and gz) and ctx.file_path .. '.gz' or ctx.file_path
 
 ### set $bu_sha1 on | off
 This variable enables on-the-fly hash calculation of SHA-1 on uploaded content. The result will be returned to client in `X-SHA1` header as hexadecimal string.
